@@ -1,8 +1,8 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { Text, View,KeyboardAvoidingView,TextInput,TouchableOpacity} from 'react-native';
+import { Text, View,KeyboardAvoidingView,TextInput,TouchableOpacity,Alert} from 'react-native';
 import { styles } from './style/loginStyle'
-function LoginScreen() {
+function LoginScreen({navigation}) {
   return (
     <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -19,14 +19,16 @@ function LoginScreen() {
                 <View style={styles.inputFieldBox}>
                     <TextInput style={styles.inputfield} placeholder='User Name' />
                     <TextInput style={styles.inputfield} placeholder='Password'/>
-                    <TouchableOpacity style={styles.button}>
+                    <Text style={styles.signupText}>Create Account</Text>
+                    <TouchableOpacity style={styles.signupBox} onPress={()=>navigation.navigate("signupScreen")}>
+                        <Text style={styles.signup}>Sign Up</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("homeScreen")}>
                         <Text style={styles.buttonTitle}>Login</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-        </View> 
-           
-        
+        </View>     
     </KeyboardAvoidingView>
   )
 }

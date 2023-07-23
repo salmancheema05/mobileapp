@@ -41,12 +41,36 @@ export const styles = StyleSheet.create({
         backgroundColor:'#1D50CF',
         marginLeft:"35%",
         width:130,
+        marginTop:15
     },
     buttonTitle:{
         color:"white",
         textAlign:"center",
         fontSize:25,
         padding:10
+    },
+    signupText:{
+        position:"absolute",
+        color:"#1D50CF",
+        top:130,
+        left:60,
+        fontSize:17
+    },
+    signupBox:{
+        position:"absolute",
+        top:133,
+        left:180,
+        
+    },
+    signup:{
+        color:"#1D50CF",
+        fontWeight:"bold"
+    },
+    signupInputField:{
+        marginBottom:30,
+        borderBottomWidth:3,
+        borderBottomColor:"#1D50CF",
+        marginHorizontal:30
     }
 
 })
