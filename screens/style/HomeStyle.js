@@ -1,29 +1,18 @@
 import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     homeHeader:{
-        flex:0.18,
+        flex:0.10,
         backgroundColor:"#1D50CF"
     },
     contactBox:{
         flex:2,
-        justifyContent:"flex-end",
+        justifyContent:"flex-end"
     },
     contactText:{
         color:"white",
-        fontSize:30,
+        fontSize:24,
         fontWeight:"bold",
-        marginLeft:15
-    },
-    tabeBox:{
-        flex:1,
-        flexDirection:"row",
-        justifyContent:"space-evenly",
-        alignItems:"center",
-    },
-    tabeText:{
-        
-        fontSize:20,
-        fontWeight:"bold"
+        marginLeft:30,
     },
     chatListBox:{
         flex:1
