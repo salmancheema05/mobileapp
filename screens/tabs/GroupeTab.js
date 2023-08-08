@@ -4,7 +4,7 @@ import { styles } from "../style/HomeStyle"
 import image1 from '../../assets/images/1.jpg'
 import image2 from '../../assets/images/2.jpg'
 import defaultImage from '../../assets/images/3.png'
-function  GroupeScreen({navigation}) {
+function  GroupeTab({navigation}) {
   const [allFriends,setAllFriends] = useState([
     {id:2,fristname:'ali', lastName:'khan',image:image2,loginStatus:false},
   ])
@@ -34,5 +34,4 @@ function  GroupeScreen({navigation}) {
       </SafeAreaView>
     )
 }
-
-export default GroupeScreen
+export default GroupeTab

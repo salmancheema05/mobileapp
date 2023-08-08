@@ -1,13 +1,16 @@
-import React,{ useState , useEffect} from 'react'
+import React,{ useState ,useContext, useEffect} from 'react'
 import { Text, View,Keyboard,Image} from 'react-native';
 import { styles } from './style/chatingScreenStyle';
 import defaultImage from '../assets/images/3.png'
 import { GiftedChat } from 'react-native-gifted-chat'
+import { Context } from '../Contextapi/Provider';
 function ChatingScreen({route}) {
   const [flex,setFlex] =useState(0.15)
   const [messages, setMessages] = useState([])
   const {userId,fristname,lastName,userImage,loginStatus} = route.params
+  const {setOpenMenu} =useContext(Context)
   useEffect(() =>{
+    setOpenMenu(false)
     setMessages([
       {
         _id: 1554,

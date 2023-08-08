@@ -40,5 +40,49 @@ export const styles = StyleSheet.create({
         left:120,
         top:50,
         color:'gray'
+    },
+    acceptButton:{
+        position:'absolute',
+        left:122,
+        top:50,
+        backgroundColor:'#1D50CF',
+        width:"30%"
+    },
+    acceptText:{
+        color:'white',
+        textAlign:"center",
+        fontSize:16,
+        padding:3
+    },
+    cancelButton:{
+        position:'absolute',
+        left:250,
+        top:50,
+        backgroundColor:'#1D50CF',
+        width:"30%"
+    },
+    removeButton:{
+        position:'absolute',
+        left:122,
+        top:50,
+        backgroundColor:'#1D50CF',
+        width:"60%"
+    },
+    dropdownmenu:{
+        position:"absolute",
+        right:10,
+        top:40,
+        backgroundColor:"white",
+        width:150,
+        height:'auto',
+        zIndex: 1, // works on ios
+        elevation: 1
+    },
+    itemText:{
+        textAlign:'center',
+        paddingTop:15,
+        paddingBottom:15,
+        fontWeight:'bold'
     }
+
 })

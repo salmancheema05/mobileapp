@@ -10,7 +10,6 @@ function All({navigation}) {
         {id:2,fristname:'ali', lastName:'khan',image:image2,loginStatus:false},
         {id:3,fristname:'hamza', lastName:'khan',image:image2,loginStatus:true},
         {id:4,fristname:'ali', lastName:'salman',loginStatus:true},
-        {id:5,fristname:'akshara', lastName:'salman',image:image1,loginStatus:true},
         {id:6,fristname:'ali', lastName:'khan',image:image2,loginStatus:true},
         {id:7,fristname:'hamza', lastName:'khan',image:image2,loginStatus:true},
         {id:8,fristname:'ali', lastName:'salman',loginStatus:true},

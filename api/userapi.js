@@ -8,3 +8,16 @@ export const loginApi = async (data) =>{
         return error
     }
 }
+export const profileImageApi = async (data) =>{
+    try{
+        const resultData = await url.post('/profileimage',data, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+        })
+        return resultData
+   }
+   catch(error){
+       return error
+   }
+}
