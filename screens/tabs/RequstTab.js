@@ -1,23 +1,30 @@
-import React,{useState} from 'react'
+import React,{useState ,useEffect} from 'react'
 import { Text, View,FlatList,TouchableOpacity,Image, SafeAreaView} from 'react-native';
 import { styles } from "../style/HomeStyle"
 import image1 from '../../assets/images/1.jpg'
 import image2 from '../../assets/images/2.jpg'
 import defaultImage from '../../assets/images/3.png'
+import { receiveRequests } from '../../api/requestApi';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {decode} from 'base-64';
+receiveRequests
 function RequestTab() {
-  const [allFriends,setAllFriends] = useState([
-    {id:4465653,fristname:'hina', lastName:'khan',image:image1,requeststatus:1},
-    {id:1,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-    {id:2,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-    {id:3,fristname:'hina', lastName:'khan',image:image1,requeststatus:1},
-    {id:4,fristname:'hina', lastName:'khan',image:image1,requeststatus:1},
-    {id:5,fristname:'hina', lastName:'khan',image:image1,requeststatus:1},
-    {id:6,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-    {id:7,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-    {id:8,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-    {id:9,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-    {id:10,fristname:'hina', lastName:'khan',image:image1,requeststatus:0},
-  ])
+  const [allFriends,setAllFriends] = useState("")
+  useEffect(()=>{
+    const requestData = async () =>{
+      try{
+        const getData = await AsyncStorage.getItem("data")
+        const parsed = JSON.parse(getData);
+        const result = await receiveRequests(parsed.id)
+        setAllFriends( result.data)
+      }
+      catch(error){
+        console.error("An error occurred:", error)
+      }
+    }
+    requestData()
+
+  },[])
   return (
     <SafeAreaView style={{flex:1}}>
         <View style={styles.chatListBox}>
@@ -26,13 +33,13 @@ function RequestTab() {
             renderItem={({item}) =>(
               <View style={styles.userBox} >
                 {
-                  item.image?(
-                    <Image style={{width:100,height:100,borderRadius:100/2}} source={item.image} />
+                  item.image_name?(
+                    <Image style={{width:100,height:100,borderRadius:100/2}} source={{ uri: `data:image/jpg;base64,${item.image_name}` }} />
                   ):
                   <Image style={{width:100,height:100,borderRadius:100/2}} source={defaultImage} />
                 }
-                <Text style={styles.UserName}>{item.fristname+ " "+item.lastName} </Text>
-                {item.requeststatus===0?(
+                <Text style={styles.UserName}>{item.firstname+ " "+item.lastname} </Text>
+                {item.request_status=="pending"?(
                   <>
                     <TouchableOpacity style={styles.acceptButton}>
                       <Text style={styles.acceptText}>Accept</Text>

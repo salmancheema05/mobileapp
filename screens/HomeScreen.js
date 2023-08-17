@@ -5,7 +5,7 @@ import { styles } from "./style/HomeStyle"
 import All from './tabs/All';
 import GroupeTab from './tabs/GroupeTab'
 import RequestTab from './tabs/RequstTab';
-import {Entypo} from '@expo/vector-icons';
+import {Entypo , EvilIcons} from '@expo/vector-icons';
 import { Context } from '../Contextapi/Provider';
 function HomeScreen({navigation}) {
   const Tab = createMaterialTopTabNavigator();
@@ -18,6 +18,9 @@ function HomeScreen({navigation}) {
           <View style={styles.contactBox}>
             <Text style={styles.contactText}>Contact</Text>
           </View>
+          <TouchableOpacity style={{position:'absolute',right:40,top:37}} onPress={()=>navigation.navigate('searchscreen')}>
+            <EvilIcons name="search" size={30} color="white"  />
+          </TouchableOpacity>
           <TouchableOpacity style={{position:'absolute',right:15,top:40}} onPress={()=>setOpenMenu(true)}>
             <Entypo name="dots-three-vertical" size={24} color="white"/>
           </TouchableOpacity>

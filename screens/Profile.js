@@ -6,7 +6,7 @@ import defaultImage from '../assets/images/3.png'
 import image1 from '../assets/images/1.jpg'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
-import { profileImageApi } from '../api/userapi'
+import { profileImageApi , GetprofileImageApi } from '../api/userapi'
 function Profile (){
     const [selectedImage, setSelectedImage] = useState(null);
     const [saveImage, setSaveImage] = useState(null);
@@ -52,7 +52,25 @@ function Profile (){
         }
     }
     useEffect(()=>{
-        console.log('hello')
+        const displayProfileImage = async() =>{
+            try{
+                const getData = await AsyncStorage.getItem("data")
+                const parsed = JSON.parse(getData);
+                const result = await GetprofileImageApi(parsed.id)
+                
+                if(result.status==200){
+                    setSaveImage(`http://192.168.1.3:5000/api/userprofile/${parsed.id}`)
+                    
+                }
+                else{
+                    console.log('error')
+                }
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+        displayProfileImage()
         setOpenMenu(false) 
         
     },[])

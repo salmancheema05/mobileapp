@@ -7,13 +7,12 @@ import SplashScreen from './screens/SplashScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Context } from './Contextapi/Provider';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Profile from './screens/Profile';
+import SearchScreen from './screens/SearchScreen';
 const NavigationScreens = () => {
   const  {isLogin,setLogin}= useContext(Context)
   const Stack = createStackNavigator()
-  const Tab = createBottomTabNavigator()
   useEffect(() =>{
     const getUserData = async () =>{
       try{
@@ -49,6 +48,8 @@ const NavigationScreens = () => {
               <Stack.Screen name="homescreen"    component={HomeScreen} />
               <Stack.Screen name="chatingscreen" component={ChatingScreen} />
               <Stack.Screen name="profile" component={Profile} />
+              <Stack.Screen name="searchscreen" component={SearchScreen} />
+              
             </>
           ):
           (

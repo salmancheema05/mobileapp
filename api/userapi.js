@@ -21,3 +21,12 @@ export const profileImageApi = async (data) =>{
        return error
    }
 }
+export const GetprofileImageApi = async (user_id) =>{
+    try{
+        const resultData = await url.get(`/userprofile/${user_id}`)
+        return resultData
+    }
+    catch(error){
+       return error
+    }
+}
