@@ -17,9 +17,18 @@ export const acceptRequests = async (data) =>{
        return error
    }
 }
-export const removeRequest = async (data) =>{
+export const send = async (data) =>{
     try{
-       const result = await url.delete(`deletedRequest/`,data)
+       const result = await url.post(`sendrequest`,data)
+       return result
+   }
+   catch(error){
+       return error
+   }
+}
+export const removeRequestApi = async (data) =>{
+    try{
+       const result = await url.delete(`deletedRequest`,data)
        return result
    }
    catch(error){
