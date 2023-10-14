@@ -34,12 +34,12 @@ function All({ navigation }) {
             >
               {item.image_name ? (
                 <Image
-                  style={{ width: 100, height: 100, borderRadius: 100 / 2 }}
+                  style={{ width: 80, height: 80, borderRadius: 80 / 2 }}
                   source={{ uri: `data:image/jpg;base64,${item.image_name}` }}
                 />
               ) : (
                 <Image
-                  style={{ width: 100, height: 100, borderRadius: 100 / 2 }}
+                  style={{ width: 80, height: 80, borderRadius: 80 / 2 }}
                   source={defaultImage}
                 />
               )}

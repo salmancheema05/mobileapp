@@ -18,6 +18,7 @@ let allFriendsGlobal = null;
 const NavigationScreens = () => {
   const { isLogin, setAllFriends } = useContext(Context);
   const Stack = createStackNavigator();
+  const socket = io(portio);
   const activestatusUpdate = (data) => {
     const indexToUpdate = allFriendsGlobal.findIndex(
       (item) => item.id === data.friendid
@@ -28,12 +29,6 @@ const NavigationScreens = () => {
     setAllFriends(null);
     setAllFriends(allFriendsGlobal);
   };
-  const socket = io(portio);
-  socket.on("inactivestatus", (data) => {
-    if (allFriendsGlobal.length > 0) {
-      activestatusUpdate(data);
-    }
-  });
   const userActive = async () => {
     try {
       const getData = await AsyncStorage.getItem("data");
@@ -46,17 +41,10 @@ const NavigationScreens = () => {
         friendid: id,
         activestatus: "online",
       });
-      socket.on("activestatus", (data) => {
-        if (allFriendsGlobal.length > 0) {
-          console.log("socket io online");
-          activestatusUpdate(data);
-        }
-      });
     } catch (error) {
       console.error(error);
     }
   };
-
   const appClose = async () => {
     const getData = await AsyncStorage.getItem("data");
     const parsed = JSON.parse(getData);
@@ -66,16 +54,27 @@ const NavigationScreens = () => {
       activestatus: "offline",
     });
   };
+  socket.on("inactivestatus", (data) => {
+    if (allFriendsGlobal.length > 0) {
+      activestatusUpdate(data);
+    }
+  });
+  socket.on("activestatus", (data) => {
+    if (allFriendsGlobal.length > 0) {
+      activestatusUpdate(data);
+    }
+  });
+
   useEffect(() => {
     //await AsyncStorage.removeItem('data');
-    const socket = io(portio);
 
-    const handleAppStateChange = (nextAppState) => {
-      if (nextAppState === "background") {
-        appClose();
-        //const socket = io(portio);
+    const handleAppStateChange = async (nextAppState) => {
+      if (nextAppState === "background" || nextAppState === "inactive") {
+        console.log("app close");
+        await appClose();
       } else if (nextAppState === "active") {
-        userActive();
+        console.log("app open1  ");
+        await userActive();
       }
     };
     AppState.addEventListener("change", handleAppStateChange);
