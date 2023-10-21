@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   chatHeaderBox: {
-    flex: 0.16,
     backgroundColor: "#1D50CF",
     flexDirection: "row",
   },
@@ -30,10 +29,39 @@ export const styles = StyleSheet.create({
   },
   chatBox: {
     flex: 1,
-    height: "100%",
+    flexDirection: "row",
+  },
+  senderMessageContainer: {
+    flex: 1,
+    width: "50%",
+    padding: 5,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  senderMessageBox: {
+    backgroundColor: "#1D50CF",
+    marginBottom: 10,
+    padding: 5,
+  },
+  senderText: {
+    color: "white",
+  },
+  receiverMessageContainer: {
+    flex: 1,
+    width: "50%",
+    padding: 5,
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+  },
+  receiverMessageBox: {
+    backgroundColor: "red",
+    marginBottom: 10,
+    padding: 5,
+  },
+  receiverText: {
+    color: "black",
   },
   InputControllBox: {
-    flex: 0.07,
     padding: 3,
     width: "100%",
     flexDirection: "row",
@@ -70,32 +98,17 @@ export const styles = StyleSheet.create({
   textInputBox: {
     width: "90%",
   },
-
   senderText: {
     color: "white",
   },
-  senderMessageBox: {
-    alignSelf: "flex-end",
-    backgroundColor: "#1D50CF",
-    maxWidth: "55%",
-    padding: 10,
-    color: "white",
-    marginRight: 10,
-    marginBottom: 20,
+  senderImageBox: {
+    width: "15%",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  senderText: {
-    color: "white",
-  },
-  receiverMessageBox: {
-    alignSelf: "flex-start",
-    backgroundColor: "#C1C0C3",
-    maxWidth: "55%",
-    padding: 10,
-    color: "black",
-    marginLeft: 10,
-    marginBottom: 20,
-  },
-  receiverText: {
-    color: "black",
+  imageWithtextInputBox: {
+    width: "70%",
+    borderRadius: 50,
+    backgroundColor: "pink",
   },
 });

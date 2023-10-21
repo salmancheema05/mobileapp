@@ -9,12 +9,21 @@ import {
 } from "react-native";
 import { styles } from "../style/HomeStyle";
 import defaultImage from "../../assets/images/3.png";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { portio } from "../../api/baseurl";
-import io from "socket.io-client";
 import { Context } from "../../Contextapi/Provider";
+import useUserStatus from "../../customHook/useUserStatus";
 function All({ navigation }) {
-  const { allFriends } = useContext(Context);
+  const { allFriends, loginbuttonClicked, setLoginButtonClicked } =
+    useContext(Context);
+  const { userActive } = useUserStatus();
+  useEffect(() => {
+    const allFriendsDisplay = async () => {
+      if (loginbuttonClicked == true) {
+        await userActive();
+        setLoginButtonClicked(false);
+      }
+    };
+    allFriendsDisplay();
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.chatListBox}>

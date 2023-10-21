@@ -4,6 +4,7 @@ const Provider = ({ children }) => {
   const [isLogin, setLogin] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [allFriends, setAllFriends] = useState([]);
+  const [loginbuttonClicked, setLoginButtonClicked] = useState(false);
   return (
     <Context.Provider
       value={{
@@ -13,6 +14,8 @@ const Provider = ({ children }) => {
         setOpenMenu,
         allFriends,
         setAllFriends,
+        loginbuttonClicked,
+        setLoginButtonClicked,
       }}
     >
       {children}

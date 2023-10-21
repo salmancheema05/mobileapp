@@ -2,13 +2,13 @@ import React, { useState, useContext, useEffect } from "react";
 import {
   Text,
   View,
-  Keyboard,
   Image,
   TouchableOpacity,
   TextInput,
-  FlatList,
-  Dimensions,
+  SafeAreaView,
+  Keyboard,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { styles } from "./style/chatingScreenStyle";
 import defaultImage from "../assets/images/3.png";
 import { Context } from "../Contextapi/Provider";
@@ -23,12 +23,14 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import { chatNewMessage } from "../api/fetchFriendsApi";
 import { Audio } from "expo-av";
+import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import { decode } from "base-64";
 let userIdGrobal = null;
 let audioURI = null;
 function ChatingScreen({ route }) {
-  const [flex, setFlex] = useState(0.15);
+  const [inputControllBoxFlex, setInputControllBoxFlex] = useState(0.07);
+  const [headerBoxFlex, setHeaderBoxFlex] = useState(0.16);
   const [userid, setUserid] = useState(null);
   const [userFirstName, setUserFirstName] = useState(null);
   const [userLastName, setUserLastName] = useState(null);
@@ -42,8 +44,6 @@ function ChatingScreen({ route }) {
   const [recordingInstance, setRecordingInstance] = useState(null);
   const [audioPlayer, setAudioPlayer] = useState(null);
   const [microphoneShow, setMicrophoneShow] = useState(true);
-
-  const { width, height } = Dimensions.get("window");
   useEffect(() => {
     if (allFriends != null) {
       for (let i = 0; i < allFriends.length; i++) {
@@ -79,62 +79,100 @@ function ChatingScreen({ route }) {
     };
     userInformation();
     const socket = io(portio);
-    socket.on("sendMessage", (newMessage) => {
-      // console.log("received message", newMessage);
+    socket.on("sendMessage", async (newMessage) => {
+      //console.log(newMessage);
       if (
         friendId == newMessage.senderId &&
         userIdGrobal == newMessage.receiverId
       ) {
-        if (newMessage.type == "audiovoice") {
-          const decodedFilePath = decode(newMessage.fileuri);
-          newMessage.fileuri = decodedFilePath;
-          setReceiveMessage((prevMessages) => [...prevMessages, newMessage]);
+        if (newMessage.type === "image") {
+          const decodeData = decode(newMessage.fileuri);
+          newMessage.fileuri = decodeData;
+          console.log(newMessage);
+          // setReceiveMessage((prevMessages) => [...prevMessages, newMessage]);
         } else {
           setReceiveMessage((prevMessages) => [...prevMessages, newMessage]);
         }
       }
     });
-
     Audio.requestPermissionsAsync();
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setInputControllBoxFlex(0.1);
+        setHeaderBoxFlex(0.25);
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setInputControllBoxFlex(0.07);
+        setHeaderBoxFlex(0.16);
+      }
+    );
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
 
   const takePicture = async () => {
-    const result = await DocumentPicker.getDocumentAsync();
+    const result = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: true,
+    });
+    const maxWidth = 800;
+    const maxHeight = 800;
+    const quality = 80;
+
     setfileMessage(result);
-    // const { uri, name, type } = result;
-    // const data = await RNFetchBlob.fs.readFile(uri, "base64");
-    // console.log("File Details:", { uri, name, type });
-    // console.log("File:", data);
+    setMicrophoneShow(false);
   };
   const send = async () => {
-    const socket = io(portio);
-    const message_Id = Date.now();
-    let newMessage = null;
-    if (fileMessage == null) {
-      newMessage = {
-        messageId: message_Id,
-        text: textMessage,
-        currentDateTime: new Date(),
-        senderId: userid,
-        receiverId: friendId,
-      };
-    } else {
-      newMessage = {
-        messageId: message_Id,
-        text: textMessage,
-        currentDateTime: new Date(),
-        senderId: userid,
-        receiverId: friendId,
-        mimeType: fileMessage.mimeType,
-        name: fileMessage.name,
-        fileuri: fileMessage.uri,
-      };
+    try {
+      const socket = io(portio);
+      const message_Id = Date.now();
+      let newMessage = null;
+      if (fileMessage == null) {
+        newMessage = {
+          messageId: message_Id,
+          text: textMessage,
+          currentDateTime: new Date(),
+          senderId: userid,
+          receiverId: friendId,
+        };
+      } else {
+        newMessage = {
+          messageId: message_Id,
+          text: textMessage,
+          currentDateTime: new Date(),
+          senderId: userid,
+          receiverId: friendId,
+          mimeType: fileMessage.mimeType,
+          name: fileMessage.name,
+          fileuri: fileMessage.uri,
+          type: "image",
+        };
+      }
+      if (newMessage.fileuri) {
+        const imageBlob = await fetch(newMessage.fileuri).then((response) =>
+          response.blob()
+        );
+        const imageObject = { ...newMessage };
+        imageObject.fileuri = imageBlob;
+
+        socket.emit("newMessageFromMe", imageObject);
+        setfileMessage(null);
+      } else {
+        socket.emit("newMessageFromMe", newMessage);
+      }
+      setMessage([...Message, newMessage]);
+
+      setTextMessage("");
+      setMicrophoneShow(true);
+    } catch (error) {
+      console.error(error);
     }
-    socket.emit("newMessageFromMe", newMessage);
-    setMessage([...Message, newMessage]);
-    setfileMessage(null);
-    setTextMessage("");
-    setMicrophoneShow(true);
   };
   const voiceRecord = async () => {
     try {
@@ -156,6 +194,7 @@ function ChatingScreen({ route }) {
       if (recordingInstance) {
         await recordingInstance.stopAndUnloadAsync();
         const uri = recordingInstance.getURI();
+
         const audioFile = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
@@ -224,8 +263,8 @@ function ChatingScreen({ route }) {
     }
   };
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.chatHeaderBox}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: headerBoxFlex, ...styles.chatHeaderBox }}>
         <View style={styles.chatHeaderImageBox}>
           <Image
             style={{
@@ -247,71 +286,79 @@ function ChatingScreen({ route }) {
           )}
         </View>
       </View>
+
       <View style={styles.chatBox}>
-        <FlatList
-          data={Message}
-          renderItem={({ item }) => (
-            <View>
-              <>
-                {item.type == "audiovoice" ? (
-                  <View style={styles.senderMessageBox}>
-                    {item.audiostatus == false ? (
-                      <TouchableOpacity
-                        onPress={() =>
-                          audioPlayButon(item.fileuri, item.messageId)
-                        }
-                      >
-                        <AntDesign name="stepforward" size={20} color="white" />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity onPress={() => pause(item.messageId)}>
-                        <AntDesign name="pause" size={24} color="white" />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ) : (
-                  <View style={styles.senderMessageBox}>
-                    <Text style={styles.senderText}>{item.text}</Text>
-                  </View>
-                )}
-              </>
-            </View>
-          )}
-          keyExtractor={(item) => item.messageId}
-        />
-        <FlatList
-          data={receiveMessage}
-          renderItem={({ item }) => (
-            <View>
-              <>
-                {item.type == "audiovoice" ? (
-                  <View style={styles.receiverMessageBox}>
-                    {item.audiostatus == false ? (
-                      <TouchableOpacity
-                        onPress={() =>
-                          audioPlayButon(item.fileuri, item.messageId)
-                        }
-                      >
-                        <AntDesign name="stepforward" size={20} color="white" />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity onPress={() => pause(item.messageId)}>
-                        <AntDesign name="pause" size={24} color="white" />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ) : (
-                  <View style={styles.receiverMessageBox}>
-                    <Text style={styles.senderText}>{item.text}</Text>
-                  </View>
-                )}
-              </>
-            </View>
-          )}
-          keyExtractor={(item) => item.messageId}
-        />
+        <View style={styles.receiverMessageContainer}>
+          {receiveMessage.map((item) => (
+            <React.Fragment key={item.messageId}>
+              {item.type == "audiovoice" ? (
+                <View style={styles.receiverMessageBox}>
+                  {item.audiostatus == false ? (
+                    <TouchableOpacity
+                      onPress={() =>
+                        audioPlayButon(item.fileuri, item.messageId)
+                      }
+                    >
+                      <AntDesign name="stepforward" size={20} color="white" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={() => pause(item.messageId)}>
+                      <AntDesign name="pause" size={24} color="white" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ) : item.type == "image" ? (
+                <>
+                  <Image
+                    style={{ width: 100, height: 100 }}
+                    source={{ uri: "" }}
+                  />
+                </>
+              ) : (
+                <View style={styles.receiverMessageBox}>
+                  <Text style={styles.senderText}>{item.text}</Text>
+                </View>
+              )}
+            </React.Fragment>
+          ))}
+        </View>
+        <View style={styles.senderMessageContainer}>
+          {Message.map((item) => (
+            <React.Fragment key={item.messageId}>
+              {item.type === "audiovoice" ? (
+                <View style={styles.senderMessageBox}>
+                  {item.audiostatus == false ? (
+                    <TouchableOpacity
+                      onPress={() =>
+                        audioPlayButon(item.fileuri, item.messageId)
+                      }
+                    >
+                      <AntDesign name="stepforward" size={20} color="white" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={() => pause(item.messageId)}>
+                      <AntDesign name="pause" size={24} color="white" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ) : item.type == "image" ? (
+                <>
+                  <Image
+                    style={{ width: 100, height: 100 }}
+                    source={{ uri: item.fileuri }}
+                  />
+                </>
+              ) : (
+                <View style={styles.senderMessageBox}>
+                  <Text style={styles.senderText}>{item.text}</Text>
+                </View>
+              )}
+            </React.Fragment>
+          ))}
+        </View>
       </View>
-      <View style={styles.InputControllBox}>
+
+      <View style={{ flex: inputControllBoxFlex, ...styles.InputControllBox }}>
         {fileMessage == null ? (
           <View style={styles.textInputWithGallaryBox}>
             <View style={styles.textInputBox}>
@@ -335,10 +382,24 @@ function ChatingScreen({ route }) {
             </View>
           </View>
         ) : (
-          <Image
-            style={{ width: 50, height: 50, borderRadius: 50 / 2 }}
-            source={{ uri: fileMessage.uri }}
-          />
+          <>
+            <View style={styles.senderImageBox}>
+              <Image
+                style={{ width: 50, height: 50, borderRadius: 50 / 2 }}
+                source={{ uri: fileMessage.uri }}
+              />
+            </View>
+            <View style={styles.imageWithtextInputBox}>
+              <TextInput
+                onChangeText={(text) => handlerText(text)}
+                value={textMessage}
+                style={{
+                  padding: 5,
+                }}
+                placeholder="Text..."
+              />
+            </View>
+          </>
         )}
 
         <View style={styles.chatingButtonBox}>
@@ -357,7 +418,7 @@ function ChatingScreen({ route }) {
           )}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
