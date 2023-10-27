@@ -15,6 +15,14 @@ export const logoutApi = async (data) => {
     return error;
   }
 };
+export const signupApi = async (data) => {
+  try {
+    const result = await url.post("/signup", data);
+    return result;
+  } catch (error) {
+    return error;
+  }
+};
 export const profileImageApi = async (data) => {
   try {
     const resultData = await url.post("/profileimage", data, {

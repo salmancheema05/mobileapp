@@ -22,13 +22,14 @@ const NavigationScreens = () => {
   const socket = io(portio);
 
   const appClose = async () => {
-    const getData = await AsyncStorage.getItem("data");
-    const parsed = JSON.parse(getData);
-    const userId = parsed.id;
-    socket.emit("yourFriendOffline", {
-      friendid: userId,
-      activestatus: "offline",
-    });
+    console.log("app close");
+    // const getData = await AsyncStorage.getItem("data");
+    // const parsed = JSON.parse(getData);
+    // const userId = parsed.id;
+    // socket.emit("yourFriendOffline", {
+    //   friendid: userId,
+    //   activestatus: "offline",
+    // });
   };
   socket.on("inactivestatus", (data) => {
     activestatusUpdate(data);
@@ -37,15 +38,12 @@ const NavigationScreens = () => {
     activestatusUpdate(data);
   });
   useEffect(() => {
-    console.log("user login app.js");
-
     if (loginbuttonClicked == false) {
       const handleAppStateChange = async (nextAppState) => {
         if (nextAppState === "background" || nextAppState === "inactive") {
-          console.log("app close");
           await appClose();
         } else if (nextAppState === "active") {
-          await userActive("salman");
+          await userActive();
         }
       };
       AppState.addEventListener("change", handleAppStateChange);

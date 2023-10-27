@@ -15,14 +15,14 @@ import { receiveRequests } from "../../api/requestApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { decode } from "base-64";
 function RequestTab() {
-  const [allFriends, setAllFriends] = useState("");
+  const [allRequest, setAllRequest] = useState(null);
   useEffect(() => {
     const requestData = async () => {
       try {
         const getData = await AsyncStorage.getItem("data");
         const parsed = JSON.parse(getData);
         const result = await receiveRequests(parsed.id);
-        setAllFriends(result.data);
+        setAllRequest(result.data);
       } catch (error) {
         console.error("An error occurred:", error);
       }
@@ -33,7 +33,7 @@ function RequestTab() {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.searchListBox}>
         <FlatList
-          data={allFriends}
+          data={allRequest}
           renderItem={({ item }) => (
             <View style={styles.searchUserBox}>
               <View style={styles.searchImageBox}>
@@ -56,14 +56,14 @@ function RequestTab() {
                   </Text>
                 </View>
                 {item.request_status == "pending" ? (
-                  <>
-                    <TouchableOpacity style={styles.acceptButton}>
-                      <Text style={styles.acceptText}>Accept</Text>
+                  <View style={styles.requestButtonBox}>
+                    <TouchableOpacity style={styles.requestButton}>
+                      <Text style={styles.requestButtonText}>Accept</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.cancelButton}>
-                      <Text style={styles.acceptText}>cancel</Text>
+                    <TouchableOpacity style={styles.requestButton}>
+                      <Text style={styles.requestButtonText}>cancel</Text>
                     </TouchableOpacity>
-                  </>
+                  </View>
                 ) : (
                   <TouchableOpacity style={styles.searchremoveButton}>
                     <Text style={styles.searchButtonText}>Remove</Text>

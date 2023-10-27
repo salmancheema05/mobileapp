@@ -58,4 +58,20 @@ export const styles = StyleSheet.create({
     padding: 5,
     justifyContent: "center",
   },
+  requestButtonBox: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  requestButton: {
+    flex: 1,
+    backgroundColor: "#1D50CF",
+    width: "50%",
+    height: "100%",
+    marginLeft: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  requestButtonText: {
+    color: "white",
+  },
 });

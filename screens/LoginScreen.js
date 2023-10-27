@@ -69,11 +69,14 @@ function LoginScreen({ navigation }) {
             <TextInput
               style={styles.inputfield}
               onChangeText={(newText) => setUserName(newText)}
+              autoCapitalize="none"
               placeholder="User Name"
             />
             <TextInput
               style={styles.inputfield}
               onChangeText={(newText) => setUserPassword(newText)}
+              autoCapitalize="none"
+              secureTextEntry={true}
               placeholder="Password"
             />
             <Text style={styles.signupText}>Create Account</Text>
@@ -83,7 +86,10 @@ function LoginScreen({ navigation }) {
             >
               <Text style={styles.signup}>Sign Up</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => userLogin()}>
+            <TouchableOpacity
+              style={styles.loginbutton}
+              onPress={() => userLogin()}
+            >
               <Text style={styles.buttonTitle}>Login</Text>
             </TouchableOpacity>
           </View>
