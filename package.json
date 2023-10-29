@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-native-async-storage/async-storage": "1.17.11",
+    "@react-native-community/slider": "^4.4.3",
     "@react-navigation/bottom-tabs": "^6.5.8",
     "@react-navigation/material-top-tabs": "^6.6.3",
     "@react-navigation/stack": "^6.3.17",
@@ -22,7 +23,6 @@
     "expo-file-system": "^15.6.0",
     "expo-image-manipulator": "^11.5.0",
     "expo-image-picker": "~14.1.1",
-    "expo-media-library": "^15.6.0",
     "expo-status-bar": "~1.4.4",
     "jwt-decode": "^3.1.2",
     "react": "18.2.0",

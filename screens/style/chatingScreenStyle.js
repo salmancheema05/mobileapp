@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
   },
   senderMessageContainer: {
-    flex: 1,
     width: "50%",
     padding: 5,
     justifyContent: "flex-end",
@@ -42,6 +41,8 @@ export const styles = StyleSheet.create({
     backgroundColor: "#1D50CF",
     marginBottom: 10,
     padding: 5,
+    width: "auto",
+    justifyConten: "flex-end",
   },
   senderText: {
     color: "white",
@@ -54,7 +55,7 @@ export const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   receiverMessageBox: {
-    backgroundColor: "red",
+    backgroundColor: "white",
     marginBottom: 10,
     padding: 5,
   },

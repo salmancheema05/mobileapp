@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
 import { View, Image, TouchableOpacity, TextInput } from "react-native";
-import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import { styles } from "../style/chatingScreenStyle";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
+import * as ImageManipulator from "expo-image-manipulator";
 import io from "socket.io-client";
 import { portio } from "../../api/baseurl";
 import { Context } from "../../Contextapi/Provider";
@@ -14,17 +14,21 @@ function ChatTextInputBox({ friendId, userid, inputControllBoxFlex }) {
   const [textMessage, setTextMessage] = useState("");
   const [fileMessage, setfileMessage] = useState(null);
   const [recordingInstance, setRecordingInstance] = useState(null);
-
   const [microphoneShow, setMicrophoneShow] = useState(true);
   const takePicture = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
     });
-    const maxWidth = 800;
-    const maxHeight = 800;
-    const quality = 80;
-
-    setfileMessage(result);
+    console.log("result", result);
+    const resizedImage = await ImageManipulator.manipulateAsync(
+      result.uri,
+      [{ resize: { width: 800, height: 800 } }],
+      { compress: 0.2, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    const imageObject = { ...result };
+    imageObject.uri = resizedImage.uri;
+    console.log("resizedImage", imageObject);
+    setfileMessage(imageObject);
     setMicrophoneShow(false);
   };
   const send = async () => {
