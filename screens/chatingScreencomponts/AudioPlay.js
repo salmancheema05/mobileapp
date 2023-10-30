@@ -16,8 +16,7 @@ function AudioPlay({
   minimumTrackTintColor,
   maximumTrackTintColor,
 }) {
-  const { Message, setMessage, receiveMessage, setReceiveMessage } =
-    useContext(Context);
+  const { Messages, setMessages } = useContext(Context);
   const [audioPlayer, setAudioPlayer] = useState(null);
   const [audioLength, setAudioLength] = useState(null);
   const [playingAudioLengthSeconds, setPlayingAudioLengthSeconds] = useState(0);
@@ -73,18 +72,18 @@ function AudioPlay({
     audioid = id;
     audioPlayBy = by;
     if (by == "sender") {
-      const index = Message.findIndex((obj) => obj.messageId === id);
+      const index = Messages.findIndex((obj) => obj.id === id);
       if (index !== -1) {
-        let newArraybySender = [...Message];
+        let newArraybySender = [...Messages];
         newArraybySender[index].audiostatus = true;
-        setMessage(newArraybySender);
+        setMessages(newArraybySender);
       }
     } else {
-      const index = receiveMessage.findIndex((obj) => obj.messageId === id);
+      const index = Messages.findIndex((obj) => obj.id === id);
       if (index !== -1) {
-        let newArraybyreceiver = [...receiveMessage];
+        let newArraybyreceiver = [...Messages];
         newArraybyreceiver[index].audiostatus = true;
-        setReceiveMessage(newArraybyreceiver);
+        setMessages(newArraybyreceiver);
       }
     }
     const base64Audio = `data:audio/3gp;base64,${audiourl}`;
@@ -98,18 +97,18 @@ function AudioPlay({
   };
   const pause = (id, by) => {
     if (by == "sender") {
-      const index = Message.findIndex((obj) => obj.messageId === id);
+      const index = Messages.findIndex((obj) => obj.id === id);
       if (index !== -1) {
-        let newArraybysender = [...Message];
+        let newArraybysender = [...Messages];
         newArraybysender[index].audiostatus = false;
-        setMessage(newArraybysender);
+        setMessages(newArraybysender);
       }
     } else {
-      const index = receiveMessage.findIndex((obj) => obj.messageId === id);
+      const index = Messages.findIndex((obj) => obj.id === id);
       if (index !== -1) {
-        let newArraybyreceiver = [...receiveMessage];
+        let newArraybyreceiver = [...Messages];
         newArraybyreceiver[index].audiostatus = false;
-        setReceiveMessage(newArraybyreceiver);
+        setMessages(newArraybyreceiver);
       }
     }
     stopAudio();
@@ -129,12 +128,12 @@ function AudioPlay({
       <View style={{ flex: 1, flexDirection: "row" }}>
         {item.audiostatus == false ? (
           <TouchableOpacity
-            onPress={() => audioPlayButon(item.fileuri, item.messageId, by)}
+            onPress={() => audioPlayButon(item.chat, item.id, by)}
           >
             <AntDesign name="stepforward" size={20} color={playStopButton} />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => pause(item.messageId, by)}>
+          <TouchableOpacity onPress={() => pause(item.id, by)}>
             <AntDesign name="pause" size={24} color={playStopButton} />
           </TouchableOpacity>
         )}

@@ -5,8 +5,7 @@ const Provider = ({ children }) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [allFriends, setAllFriends] = useState([]);
   const [loginbuttonClicked, setLoginButtonClicked] = useState(false);
-  const [receiveMessage, setReceiveMessage] = useState([]);
-  const [Message, setMessage] = useState([]);
+  const [Messages, setMessages] = useState([]);
   return (
     <Context.Provider
       value={{
@@ -18,10 +17,8 @@ const Provider = ({ children }) => {
         setAllFriends,
         loginbuttonClicked,
         setLoginButtonClicked,
-        Message,
-        setMessage,
-        receiveMessage,
-        setReceiveMessage,
+        Messages,
+        setMessages,
       }}
     >
       {children}

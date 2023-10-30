@@ -10,7 +10,7 @@ import io from "socket.io-client";
 import { portio } from "../../api/baseurl";
 import { Context } from "../../Contextapi/Provider";
 function ChatTextInputBox({ friendId, userid, inputControllBoxFlex }) {
-  const { setMessage, Message } = useContext(Context);
+  const { setMessages, Messages } = useContext(Context);
   const [textMessage, setTextMessage] = useState("");
   const [fileMessage, setfileMessage] = useState(null);
   const [recordingInstance, setRecordingInstance] = useState(null);
@@ -19,7 +19,6 @@ function ChatTextInputBox({ friendId, userid, inputControllBoxFlex }) {
     const result = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
     });
-    console.log("result", result);
     const resizedImage = await ImageManipulator.manipulateAsync(
       result.uri,
       [{ resize: { width: 800, height: 800 } }],
@@ -38,20 +37,20 @@ function ChatTextInputBox({ friendId, userid, inputControllBoxFlex }) {
       let newMessage = null;
       if (fileMessage == null) {
         newMessage = {
-          messageId: message_Id,
-          text: textMessage,
-          currentDateTime: new Date(),
-          senderId: userid,
-          receiverId: friendId,
+          id: message_Id,
+          chat: textMessage,
+          created_at: new Date(),
+          senderid: userid,
+          receiverid: friendId,
         };
       } else {
         newMessage = {
           type: "image",
-          messageId: message_Id,
-          text: textMessage,
-          currentDateTime: new Date(),
-          senderId: userid,
-          receiverId: friendId,
+          id: message_Id,
+          chat: textMessage,
+          created_at: new Date(),
+          senderid: userid,
+          receiverid: friendId,
           mimeType: fileMessage.mimeType,
           name: fileMessage.name,
           fileuri: fileMessage.uri,
@@ -69,7 +68,7 @@ function ChatTextInputBox({ friendId, userid, inputControllBoxFlex }) {
       } else {
         socket.emit("newMessageFromMe", newMessage);
       }
-      setMessage([...Message, newMessage]);
+      setMessages([...Messages, newMessage]);
 
       setTextMessage("");
       setMicrophoneShow(true);
@@ -91,15 +90,15 @@ function ChatTextInputBox({ friendId, userid, inputControllBoxFlex }) {
         });
         audioURI = uri;
         let newVoiceMessage = {
-          messageId: message_Id,
-          currentDateTime: new Date(),
-          senderId: userid,
-          receiverId: friendId,
-          fileuri: audioFile,
+          id: message_Id,
+          created_at: new Date(),
+          senderid: userid,
+          receiverid: friendId,
+          chat: audioFile,
           type: "audiovoice",
           audiostatus: false,
         };
-        setMessage([...Message, newVoiceMessage]);
+        setMessages([...Messages, newVoiceMessage]);
         socket.emit("newMessageFromMe", newVoiceMessage);
       }
     } catch (error) {

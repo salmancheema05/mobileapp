@@ -7,10 +7,10 @@ export const AllFriendsApi = async (user_id) => {
     return error;
   }
 };
-export const chatNewMessage = async (data) => {
+export const getChats = async (data) => {
   try {
-    const result = await url.post("newmessage", data);
-    //console.log("api", data);
+    const { senderid, receiverid } = data;
+    const result = await url.get(`fetchchats/${senderid}/${receiverid}`);
     return result;
   } catch (error) {
     return error;
