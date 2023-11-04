@@ -80,6 +80,7 @@ function ChatingScreen({ route }) {
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
+      setMessages(null);
     };
   }, []);
   return (
@@ -93,6 +94,10 @@ function ChatingScreen({ route }) {
       />
       <View style={styles.chatBox}>
         <FlatList
+          contentContainerStyle={{
+            //flex: 1,
+            justifyContent: "flex-end",
+          }}
           data={Messages}
           renderItem={({ item }) => (
             <>

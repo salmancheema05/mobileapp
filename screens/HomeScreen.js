@@ -10,7 +10,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { styles } from "./style/HomeStyle";
 import All from "./tabs/All";
-import GroupeTab from "./tabs/GroupeTab";
 import RequestTab from "./tabs/RequstTab";
 import { Entypo, EvilIcons } from "@expo/vector-icons";
 import { Context } from "../Contextapi/Provider";
@@ -74,7 +73,6 @@ function HomeScreen({ navigation }) {
         }}
       >
         <Tab.Screen name="all" component={All} />
-        <Tab.Screen name="group" component={GroupeTab} />
         <Tab.Screen name="request" component={RequestTab} />
       </Tab.Navigator>
       {openMenu === true ? (

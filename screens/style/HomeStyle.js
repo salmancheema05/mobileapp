@@ -35,12 +35,6 @@ export const styles = StyleSheet.create({
     left: 60,
     top: 60,
   },
-  lastMessage: {
-    position: "absolute",
-    left: 90,
-    top: 40,
-    color: "gray",
-  },
   acceptButton: {
     position: "absolute",
     left: 122,

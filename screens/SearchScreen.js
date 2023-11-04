@@ -18,18 +18,16 @@ import { searchPeople } from "../api/searchApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { acceptRequests, removeRequestApi, send } from "../api/requestApi";
 const SearchScreen = () => {
-  const [tempsearch, setTempSearch] = useState(null);
   const [allFriends, setAllFriends] = useState(null);
   const userSearch = async (search) => {
     try {
-      const result = await searchPeople(search);
       const getData = await AsyncStorage.getItem("data");
       const parsed = JSON.parse(getData);
       const id = parsed.id;
+      const data = { userid: id, search: search };
+      const result = await searchPeople(data);
       if (result.status == 200) {
-        const filteredData = result.data.filter((item) => item.id != id);
-        setAllFriends(filteredData);
-        setTempSearch(search);
+        setAllFriends(result.data);
       } else {
         setAllFriends(null);
       }
@@ -47,28 +45,18 @@ const SearchScreen = () => {
       object.receiver_id = id;
       const result = await acceptRequests(object);
       Alert.alert(result.data.message);
-      userSearch(tempsearch);
     } catch (error) {
       console.error(error);
     }
   };
-  const removeRequst = async (senderId) => {
+  const removeRequst = async (senderid, receiverId) => {
     try {
-      let object = { sender_id: 0, receiver_id: 0 };
-      const getData = await AsyncStorage.getItem("data");
-      const parsed = JSON.parse(getData);
-      const id = parsed.id;
-      object.sender_id = senderId;
-      object.receiver_id = id;
-      console.log(object);
+      const object = { sender_id: senderid, receiver_id: receiverId };
       const result = await removeRequestApi(object);
+      updateRequestStatuts(receiverId, null, null, null, null);
       if (result.status == 200) {
         Alert.alert(result.data.message);
-        userSearch(tempsearch);
-      } else {
-        Alert.alert("some thing wrong");
       }
-      console.log(result);
     } catch (error) {
       // Alert.alert(error.error)
       console.log(error);
@@ -80,12 +68,13 @@ const SearchScreen = () => {
       const getData = await AsyncStorage.getItem("data");
       const parsed = JSON.parse(getData);
       const id = parsed.id;
+      const friendId = receiverId;
       object.sender_id = id;
       object.receiver_id = receiverId;
       const result = await send(object);
+      updateRequestStatuts(friendId, receiverId, "pending", id, null);
       if (result.status == 200) {
         Alert.alert(result.data.message);
-        userSearch(tempsearch);
       } else {
         Alert.alert("some thing wrong");
       }
@@ -93,7 +82,17 @@ const SearchScreen = () => {
       console.log(error);
     }
   };
-  useEffect(() => {}, []);
+  function updateRequestStatuts(id, receiverid, status, senderid, requestid) {
+    const index = listPeople.findIndex((obj) => obj.id === id);
+    if (index !== -1) {
+      let updateArray = [...allFriends];
+      updateArray[index].request_status = status;
+      updateArray[index].sender_id = senderid;
+      updateArray[index].receiver_id = receiverid;
+      updateArray[index].request_id = requestid;
+      setAllFriends(updateArray);
+    }
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -160,7 +159,9 @@ const SearchScreen = () => {
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={styles.searchGroupButton}
-                          onPress={() => removeRequst(item.id)}
+                          onPress={() =>
+                            removeRequst(item.sender_id, item.receiver_id)
+                          }
                         >
                           <Text style={styles.searchButtonText}>cancel</Text>
                         </TouchableOpacity>
@@ -168,7 +169,9 @@ const SearchScreen = () => {
                     ) : item.receiver_id == item.id ? (
                       <TouchableOpacity
                         style={styles.searchremoveButton}
-                        onPress={() => removeRequst(item.id)}
+                        onPress={() =>
+                          removeRequst(item.sender_id, item.receiver_id)
+                        }
                       >
                         <Text style={styles.searchButtonText}>
                           Remove Request

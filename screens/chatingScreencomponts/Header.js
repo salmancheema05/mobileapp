@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Text, View, Image } from "react-native";
 import { Context } from "../../Contextapi/Provider";
-import defaultImage from "../../assets/images/3.png";
 import { styles } from "../style/chatingScreenStyle";
 function Header({ firstname, lastname, userImage, headerBoxFlex, friendId }) {
   const { allFriends } = useContext(Context);
@@ -25,14 +24,25 @@ function Header({ firstname, lastname, userImage, headerBoxFlex, friendId }) {
   return (
     <View style={{ flex: headerBoxFlex, ...styles.chatHeaderBox }}>
       <View style={styles.chatHeaderImageBox}>
-        <Image
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 60 / 2,
-          }}
-          source={{ uri: `data:image/jpg;base64,${userImage}` }}
-        />
+        {userImage != null ? (
+          <Image
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 60 / 2,
+            }}
+            source={{ uri: `data:image/jpg;base64,${userImage}` }}
+          />
+        ) : (
+          <Image
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 60 / 2,
+            }}
+            source={require("../../assets/images/3.png")}
+          />
+        )}
       </View>
       <View style={styles.chatUserContentBox}>
         <Text style={styles.chatingUserName}>{firstname + " " + lastname}</Text>

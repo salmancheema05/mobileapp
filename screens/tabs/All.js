@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -58,9 +58,6 @@ function All({ navigation }) {
               {item.activestatus == "online" ? (
                 <Text style={styles.loginStatus}></Text>
               ) : null}
-              <Text style={styles.lastMessage}>
-                hello Akshara Where r u ?....
-              </Text>
             </TouchableOpacity>
           )}
           keyExtractor={(item) => item.id}

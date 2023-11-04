@@ -23,7 +23,7 @@ function ReceiverMessageBox({ item }) {
           />
         </>
       ) : (
-        <View style={styles.receiverMessageBox}>
+        <View>
           <Text style={styles.receiverText}>{item.chat}</Text>
         </View>
       )}

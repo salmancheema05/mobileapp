@@ -10,7 +10,6 @@ function SenderMessage({ item }) {
         <AudioPlay
           item={item}
           by="sender"
-          bgColor="#1D50CF"
           playStopButton="white"
           minimumTrackTintColor="white"
           maximumTrackTintColor="white"
@@ -24,7 +23,7 @@ function SenderMessage({ item }) {
           />
         </>
       ) : (
-        <View style={styles.senderMessageBox}>
+        <View>
           <Text style={styles.senderText}>{item.chat}</Text>
         </View>
       )}

@@ -29,39 +29,22 @@ export const styles = StyleSheet.create({
   },
   chatBox: {
     flex: 1,
-    flexDirection: "row",
   },
   senderMessageContainer: {
-    width: "50%",
-    padding: 5,
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-  },
-  senderMessageBox: {
     backgroundColor: "#1D50CF",
-    marginBottom: 10,
-    padding: 5,
-    width: "auto",
-    justifyConten: "flex-end",
-  },
-  senderText: {
-    color: "white",
+    margin: "1%",
+    maxWidth: "50%",
+    padding: 10,
+    alignSelf: "flex-end",
   },
   receiverMessageContainer: {
-    flex: 1,
-    width: "50%",
-    padding: 5,
-    justifyContent: "flex-end",
-    alignItems: "flex-start",
-  },
-  receiverMessageBox: {
     backgroundColor: "white",
-    marginBottom: 10,
-    padding: 5,
+    margin: "1%",
+    maxWidth: "50%",
+    padding: 10,
+    alignSelf: "flex-start",
   },
-  receiverText: {
-    color: "black",
-  },
+
   InputControllBox: {
     padding: 3,
     width: "100%",

@@ -121,8 +121,6 @@ function AudioPlay({
         alignItems: "flex-end",
         flexDirection: "row",
         width: "100%",
-        padding: 10,
-        margin: 5,
       }}
     >
       <View style={{ flex: 1, flexDirection: "row" }}>
