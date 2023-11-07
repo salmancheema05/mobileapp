@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -14,15 +14,29 @@ import defaultImage from "../../assets/images/3.png";
 import { receiveRequests } from "../../api/requestApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { decode } from "base-64";
+import { Context } from "../../Contextapi/Provider";
+let requestArray = null;
 function RequestTab() {
-  const [allRequest, setAllRequest] = useState(null);
+  const { allRequest, setAllRequest, setRequestsCount } = useContext(Context);
+  const totalNewRequests = () => {
+    let count = 0;
+    const allRequestLength = requestArray.length;
+    for (let i = 0; i < allRequestLength; i++) {
+      if (requestArray[i].request_status == "pending") {
+        count++;
+      }
+    }
+    setRequestsCount(count);
+  };
   useEffect(() => {
     const requestData = async () => {
       try {
         const getData = await AsyncStorage.getItem("data");
         const parsed = JSON.parse(getData);
         const result = await receiveRequests(parsed.id);
+        requestArray = result.data;
         setAllRequest(result.data);
+        totalNewRequests();
       } catch (error) {
         console.error("An error occurred:", error);
       }

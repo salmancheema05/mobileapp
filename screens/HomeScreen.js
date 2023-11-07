@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -18,7 +18,8 @@ import io from "socket.io-client";
 import { portio } from "../api/baseurl";
 function HomeScreen({ navigation }) {
   const Tab = createMaterialTopTabNavigator();
-  const { openMenu, setOpenMenu, setLogin } = useContext(Context);
+  const { openMenu, setOpenMenu, setLogin, requestsCount } =
+    useContext(Context);
   const logout = async () => {
     const socket = io(portio);
     const getData = await AsyncStorage.getItem("data");
@@ -37,7 +38,6 @@ function HomeScreen({ navigation }) {
       });
     }
   };
-
   return (
     <>
       <TouchableHighlight
@@ -73,7 +73,30 @@ function HomeScreen({ navigation }) {
         }}
       >
         <Tab.Screen name="all" component={All} />
-        <Tab.Screen name="request" component={RequestTab} />
+        <Tab.Screen
+          name="request"
+          component={RequestTab}
+          options={{
+            tabBarBadge: () => (
+              <Text
+                style={{
+                  backgroundColor: "white",
+                  marginRight: 40,
+                  marginTop: 15,
+                  paddingTop: 3,
+                  textAlign: "center",
+                  width: 20,
+                  height: 20,
+                  borderRadius: 20 / 2,
+                  color: "black",
+                  fontSize: 10,
+                }}
+              >
+                {requestsCount}
+              </Text>
+            ),
+          }}
+        />
       </Tab.Navigator>
       {openMenu === true ? (
         <View style={styles.dropdownmenu}>

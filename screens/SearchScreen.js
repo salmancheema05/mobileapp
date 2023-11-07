@@ -35,14 +35,14 @@ const SearchScreen = () => {
       console.error(error);
     }
   };
-  const accept = async (senderId) => {
+  const accept = async (senderid, receiverId) => {
     try {
-      let object = { sender_id: 0, receiver_id: 0 };
       const getData = await AsyncStorage.getItem("data");
       const parsed = JSON.parse(getData);
-      const id = parsed.id;
-      object.sender_id = senderId;
-      object.receiver_id = id;
+      const receiverid = parsed.id;
+      const object = { sender_id: senderid, receiver_id: receiverId };
+      const friendId = senderid;
+      updateRequestStatuts(friendId, receiverid, "accept", friendId);
       const result = await acceptRequests(object);
       Alert.alert(result.data.message);
     } catch (error) {
@@ -53,12 +53,23 @@ const SearchScreen = () => {
     try {
       const object = { sender_id: senderid, receiver_id: receiverId };
       const result = await removeRequestApi(object);
-      updateRequestStatuts(receiverId, null, null, null, null);
+      updateRequestStatuts(receiverId, null, null, null);
       if (result.status == 200) {
         Alert.alert(result.data.message);
       }
     } catch (error) {
-      // Alert.alert(error.error)
+      console.log(error);
+    }
+  };
+  const cancelRequst = async (senderId, receiverId) => {
+    try {
+      const object = { sender_id: senderId, receiver_id: receiverId };
+      const result = await removeRequestApi(object);
+      updateRequestStatuts(senderId, null, null, null);
+      if (result.status == 200) {
+        Alert.alert(result.data.message);
+      }
+    } catch (error) {
       console.log(error);
     }
   };
@@ -67,12 +78,12 @@ const SearchScreen = () => {
       let object = { sender_id: 0, receiver_id: 0 };
       const getData = await AsyncStorage.getItem("data");
       const parsed = JSON.parse(getData);
-      const id = parsed.id;
+      const senderid = parsed.id;
       const friendId = receiverId;
-      object.sender_id = id;
+      object.sender_id = senderid;
       object.receiver_id = receiverId;
       const result = await send(object);
-      updateRequestStatuts(friendId, receiverId, "pending", id, null);
+      updateRequestStatuts(friendId, friendId, "pending", senderid);
       if (result.status == 200) {
         Alert.alert(result.data.message);
       } else {
@@ -82,14 +93,13 @@ const SearchScreen = () => {
       console.log(error);
     }
   };
-  function updateRequestStatuts(id, receiverid, status, senderid, requestid) {
-    const index = listPeople.findIndex((obj) => obj.id === id);
+  function updateRequestStatuts(id, receiver_id, status, senderid) {
+    const index = allFriends.findIndex((obj) => obj.id === id);
     if (index !== -1) {
       let updateArray = [...allFriends];
       updateArray[index].request_status = status;
       updateArray[index].sender_id = senderid;
-      updateArray[index].receiver_id = receiverid;
-      updateArray[index].request_id = requestid;
+      updateArray[index].receiver_id = receiver_id;
       setAllFriends(updateArray);
     }
   }
@@ -153,20 +163,23 @@ const SearchScreen = () => {
                       <View style={styles.groupButtonBox}>
                         <TouchableOpacity
                           style={styles.searchGroupButton}
-                          onPress={() => accept(item.id)}
+                          onPress={() =>
+                            accept(item.sender_id, item.receiver_id)
+                          }
                         >
                           <Text style={styles.searchButtonText}>Accept</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={styles.searchGroupButton}
                           onPress={() =>
-                            removeRequst(item.sender_id, item.receiver_id)
+                            cancelRequst(item.sender_id, item.receiver_id)
                           }
                         >
                           <Text style={styles.searchButtonText}>cancel</Text>
                         </TouchableOpacity>
                       </View>
-                    ) : item.receiver_id == item.id ? (
+                    ) : item.request_status === "pending" &&
+                      item.receiver_id == item.id ? (
                       <TouchableOpacity
                         style={styles.searchremoveButton}
                         onPress={() =>
@@ -177,11 +190,14 @@ const SearchScreen = () => {
                           Remove Request
                         </Text>
                       </TouchableOpacity>
-                    ) : item.request_status == "accept" &&
-                      item.sender_id == item.id ? (
+                    ) : item.request_status === "accept" &&
+                      (item.sender_id === item.id ||
+                        item.receiver_id === item.id) ? (
                       <TouchableOpacity
                         style={styles.searchremoveButton}
-                        onPress={() => removeRequst(item.id)}
+                        onPress={() =>
+                          removeRequst(item.sender_id, item.receiver_id)
+                        }
                       >
                         <Text style={styles.searchButtonText}>
                           Delete Friend

@@ -9,7 +9,8 @@ export const receiveRequests = async (receiver_id) => {
 };
 export const acceptRequests = async (data) => {
   try {
-    const result = await url.put(`acceptedrequest`, data);
+    const { sender_id, receiver_id } = data;
+    const result = await url.put(`acceptedrequest/${sender_id}/${receiver_id}`);
     return result;
   } catch (error) {
     return error;
