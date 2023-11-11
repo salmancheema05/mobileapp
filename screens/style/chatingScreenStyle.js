@@ -31,10 +31,11 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   senderMessageContainer: {
+    flex: 1,
     backgroundColor: "#1D50CF",
     margin: "1%",
     maxWidth: "50%",
-    padding: 10,
+    padding: 6,
     alignSelf: "flex-end",
   },
   receiverMessageContainer: {

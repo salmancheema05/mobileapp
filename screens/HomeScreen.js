@@ -18,10 +18,16 @@ import io from "socket.io-client";
 import { portio } from "../api/baseurl";
 function HomeScreen({ navigation }) {
   const Tab = createMaterialTopTabNavigator();
-  const { openMenu, setOpenMenu, setLogin, requestsCount } =
-    useContext(Context);
+  const socket = io(portio);
+  const {
+    openMenu,
+    setOpenMenu,
+    setLogin,
+    requestsCount,
+    setAllRequest,
+    setRequestsCount,
+  } = useContext(Context);
   const logout = async () => {
-    const socket = io(portio);
     const getData = await AsyncStorage.getItem("data");
     const parsed = JSON.parse(getData);
     const { id, token } = parsed;
@@ -38,6 +44,16 @@ function HomeScreen({ navigation }) {
       });
     }
   };
+  useEffect(() => {
+    socket.on("requestdatareceive", async (data) => {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      if (data.receiver_id == parsed.id) {
+        setAllRequest((prevMessages) => [...prevMessages, data]);
+        setRequestsCount(requestsCount + 1);
+      }
+    });
+  }, []);
   return (
     <>
       <TouchableHighlight

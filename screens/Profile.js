@@ -65,7 +65,7 @@ function Profile() {
         const result = await GetprofileImageApi(parsed.id);
 
         if (result.status == 200) {
-          setSaveImage(`http://192.168.1.9:5000/api/userprofile/${parsed.id}`);
+          setSaveImage(`http://192.168.1.3:5000/api/userprofile/${parsed.id}`);
         } else {
           console.log("error");
         }

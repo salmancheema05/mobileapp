@@ -8,16 +8,20 @@ import {
   SafeAreaView,
 } from "react-native";
 import { styles } from "../style/searchScreenStyle";
-import image1 from "../../assets/images/1.jpg";
-import image2 from "../../assets/images/2.jpg";
 import defaultImage from "../../assets/images/3.png";
 import { receiveRequests } from "../../api/requestApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { decode } from "base-64";
 import { Context } from "../../Contextapi/Provider";
+import io from "socket.io-client";
+import { portio } from "../../api/baseurl";
+import useAcceptButton from "../../customHook/useAcceptButton";
 let requestArray = null;
 function RequestTab() {
-  const { allRequest, setAllRequest, setRequestsCount } = useContext(Context);
+  const socket = io(portio);
+  const { allRequest, setAllRequest, requestsCount, setRequestsCount } =
+    useContext(Context);
+  const { accept, cancelRequst } = useAcceptButton(allRequest, setAllRequest);
   const totalNewRequests = () => {
     let count = 0;
     const allRequestLength = requestArray.length;
@@ -28,19 +32,36 @@ function RequestTab() {
     }
     setRequestsCount(count);
   };
-  useEffect(() => {
-    const requestData = async () => {
-      try {
-        const getData = await AsyncStorage.getItem("data");
-        const parsed = JSON.parse(getData);
-        const result = await receiveRequests(parsed.id);
-        requestArray = result.data;
-        setAllRequest(result.data);
-        totalNewRequests();
-      } catch (error) {
-        console.error("An error occurred:", error);
+  const requestData = async () => {
+    try {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      const result = await receiveRequests(parsed.id);
+      requestArray = result.data;
+      setAllRequest(result.data);
+      totalNewRequests();
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  };
+  const cancelbutton = (sender_id, receiver_id) => {
+    cancelRequst(sender_id, receiver_id, "requesttab");
+    const allRequestLength = requestArray.length;
+    let array = [];
+    for (let i = 0; i < allRequestLength; i++) {
+      if (
+        requestArray[i].sender_id == sender_id &&
+        requestArray[i].receiver_id == receiver_id
+      ) {
+        delete requestArray[i];
+      } else {
+        array.push(requestArray[i]);
       }
-    };
+    }
+    setAllRequest(array);
+    setRequestsCount(requestsCount - 1);
+  };
+  useEffect(() => {
     requestData();
   }, []);
   return (
@@ -71,15 +92,28 @@ function RequestTab() {
                 </View>
                 {item.request_status == "pending" ? (
                   <View style={styles.requestButtonBox}>
-                    <TouchableOpacity style={styles.requestButton}>
+                    <TouchableOpacity
+                      style={styles.requestButton}
+                      onPress={() => accept(item.sender_id, item.receiver_id)}
+                    >
                       <Text style={styles.requestButtonText}>Accept</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.requestButton}>
+                    <TouchableOpacity
+                      style={styles.requestButton}
+                      onPress={() =>
+                        cancelbutton(item.sender_id, item.receiver_id)
+                      }
+                    >
                       <Text style={styles.requestButtonText}>cancel</Text>
                     </TouchableOpacity>
                   </View>
                 ) : (
-                  <TouchableOpacity style={styles.searchremoveButton}>
+                  <TouchableOpacity
+                    style={styles.searchremoveButton}
+                    onPress={() =>
+                      cancelbutton(item.sender_id, item.receiver_id)
+                    }
+                  >
                     <Text style={styles.searchButtonText}>Remove</Text>
                   </TouchableOpacity>
                 )}

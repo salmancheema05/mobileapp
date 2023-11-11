@@ -23,10 +23,20 @@ function SenderMessage({ item }) {
           />
         </>
       ) : (
-        <View>
+        <>
           <Text style={styles.senderText}>{item.chat}</Text>
-        </View>
+        </>
       )}
+      {item.chatstatus == "seen" ? (
+        <Text
+          style={{
+            textAlign: "right",
+            color: "lightgray",
+          }}
+        >
+          {item.chatstatus}
+        </Text>
+      ) : null}
     </View>
   );
 }

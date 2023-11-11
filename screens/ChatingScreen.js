@@ -21,44 +21,61 @@ function ChatingScreen({ route }) {
   const [userFirstName, setUserFirstName] = useState(null);
   const [userLastName, setUserLastName] = useState(null);
   const { friendId, firstname, lastname, userImage } = route.params;
+  const socket = io(portio);
+  const userInformation = async () => {
+    try {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      const id = parsed.id;
+      const firstname = parsed.firstname;
+      const lastname = parsed.lastname;
+      setUserid(id);
+      userIdGrobal = id;
+      setUserFirstName(firstname);
+      setUserLastName(lastname);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getAllChats = async () => {
+    try {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      const id = parsed.id;
+      const ids = { senderid: id, receiverid: friendId };
+      const result = await getChats(ids);
+      setMessages(result.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const seenChats = async () => {
+    const getData = await AsyncStorage.getItem("data");
+    const parsed = JSON.parse(getData);
+    const id = parsed.id;
+    socket.emit("seenchats", { sender_id: id, receiver_id: friendId });
+  };
+
   useEffect(() => {
     setOpenMenu(false);
-    const userInformation = async () => {
-      try {
-        const getData = await AsyncStorage.getItem("data");
-        const parsed = JSON.parse(getData);
-        const id = parsed.id;
-        const firstname = parsed.firstname;
-        const lastname = parsed.lastname;
-        setUserid(id);
-        userIdGrobal = id;
-        setUserFirstName(firstname);
-        setUserLastName(lastname);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const getAllChats = async () => {
-      try {
-        const getData = await AsyncStorage.getItem("data");
-        const parsed = JSON.parse(getData);
-        const id = parsed.id;
-        const ids = { senderid: id, receiverid: friendId };
-        const result = await getChats(ids);
-        setMessages(result.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     userInformation();
     getAllChats();
-    const socket = io(portio);
+    seenChats();
     socket.on("sendMessage", async (newMessage) => {
       if (
         friendId == newMessage.senderid &&
         userIdGrobal == newMessage.receiverid
       ) {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
+        seenChats();
+      }
+    });
+    socket.on("yourchatsseen", async (data) => {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      const id = parsed.id;
+      if (data.receiver_id == id) {
+        getAllChats();
       }
     });
     Audio.requestPermissionsAsync();
@@ -69,7 +86,6 @@ function ChatingScreen({ route }) {
         setHeaderBoxFlex(0.25);
       }
     );
-
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
       () => {
@@ -81,6 +97,7 @@ function ChatingScreen({ route }) {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
       setMessages(null);
+      socket.disconnect();
     };
   }, []);
   return (

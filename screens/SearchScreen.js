@@ -16,9 +16,17 @@ import image1 from "../assets/images/1.jpg";
 import defaultImage from "../assets/images/3.png";
 import { searchPeople } from "../api/searchApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { acceptRequests, removeRequestApi, send } from "../api/requestApi";
+import { acceptRequests, removeRequestApi } from "../api/requestApi";
+import io from "socket.io-client";
+import { portio } from "../api/baseurl";
+import useAcceptButton from "../customHook/useAcceptButton";
 const SearchScreen = () => {
   const [allFriends, setAllFriends] = useState(null);
+  const { accept, cancelRequst, updateRequestStatuts } = useAcceptButton(
+    allFriends,
+    setAllFriends
+  );
+
   const userSearch = async (search) => {
     try {
       const getData = await AsyncStorage.getItem("data");
@@ -35,20 +43,6 @@ const SearchScreen = () => {
       console.error(error);
     }
   };
-  const accept = async (senderid, receiverId) => {
-    try {
-      const getData = await AsyncStorage.getItem("data");
-      const parsed = JSON.parse(getData);
-      const receiverid = parsed.id;
-      const object = { sender_id: senderid, receiver_id: receiverId };
-      const friendId = senderid;
-      updateRequestStatuts(friendId, receiverid, "accept", friendId);
-      const result = await acceptRequests(object);
-      Alert.alert(result.data.message);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const removeRequst = async (senderid, receiverId) => {
     try {
       const object = { sender_id: senderid, receiver_id: receiverId };
@@ -61,20 +55,10 @@ const SearchScreen = () => {
       console.log(error);
     }
   };
-  const cancelRequst = async (senderId, receiverId) => {
-    try {
-      const object = { sender_id: senderId, receiver_id: receiverId };
-      const result = await removeRequestApi(object);
-      updateRequestStatuts(senderId, null, null, null);
-      if (result.status == 200) {
-        Alert.alert(result.data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const sendRequst = async (receiverId) => {
     try {
+      const socket = io(portio);
       let object = { sender_id: 0, receiver_id: 0 };
       const getData = await AsyncStorage.getItem("data");
       const parsed = JSON.parse(getData);
@@ -82,27 +66,13 @@ const SearchScreen = () => {
       const friendId = receiverId;
       object.sender_id = senderid;
       object.receiver_id = receiverId;
-      const result = await send(object);
+      socket.emit("requestsend", object);
       updateRequestStatuts(friendId, friendId, "pending", senderid);
-      if (result.status == 200) {
-        Alert.alert(result.data.message);
-      } else {
-        Alert.alert("some thing wrong");
-      }
     } catch (error) {
       console.log(error);
     }
   };
-  function updateRequestStatuts(id, receiver_id, status, senderid) {
-    const index = allFriends.findIndex((obj) => obj.id === id);
-    if (index !== -1) {
-      let updateArray = [...allFriends];
-      updateArray[index].request_status = status;
-      updateArray[index].sender_id = senderid;
-      updateArray[index].receiver_id = receiver_id;
-      setAllFriends(updateArray);
-    }
-  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -172,7 +142,11 @@ const SearchScreen = () => {
                         <TouchableOpacity
                           style={styles.searchGroupButton}
                           onPress={() =>
-                            cancelRequst(item.sender_id, item.receiver_id)
+                            cancelRequst(
+                              item.sender_id,
+                              item.receiver_id,
+                              "search"
+                            )
                           }
                         >
                           <Text style={styles.searchButtonText}>cancel</Text>
