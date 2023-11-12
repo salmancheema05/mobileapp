@@ -19,6 +19,8 @@ function Profile() {
   const [saveImage, setSaveImage] = useState(null);
   const [model, setModel] = useState(false);
   const { setOpenMenu } = useContext(Context);
+  const [userFirstName, setUserFirstName] = useState(null);
+  const [userLastName, setUserLastName] = useState(null);
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -57,22 +59,32 @@ function Profile() {
       console.log(error);
     }
   };
-  useEffect(() => {
-    const displayProfileImage = async () => {
-      try {
-        const getData = await AsyncStorage.getItem("data");
-        const parsed = JSON.parse(getData);
-        const result = await GetprofileImageApi(parsed.id);
-
-        if (result.status == 200) {
-          setSaveImage(`http://192.168.1.3:5000/api/userprofile/${parsed.id}`);
-        } else {
-          console.log("error");
-        }
-      } catch (error) {
-        console.log(error);
+  const displayProfileImage = async () => {
+    try {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      const result = await GetprofileImageApi(parsed.id);
+      if (result.status == 200) {
+        setSaveImage(result.data.message);
+      } else {
+        console.log("error");
       }
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const userFullName = async () => {
+    try {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      setUserFirstName(parsed.firstname);
+      setUserLastName(parsed.lastname);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    userFullName();
     displayProfileImage();
     setOpenMenu(false);
   }, []);
@@ -117,7 +129,7 @@ function Profile() {
           ) : saveImage !== null ? (
             <Image
               style={{ width: 150, height: 150, borderRadius: 150 / 2 }}
-              source={{ uri: saveImage }}
+              source={{ uri: `data:image/jpg;base64,${saveImage}` }}
             />
           ) : (
             <Image
@@ -127,6 +139,11 @@ function Profile() {
           )}
         </View>
         <View style={styles.menuBox}>
+          <TouchableOpacity>
+            <Text style={styles.menuItem}>
+              {userFirstName + " " + userLastName}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => pickImage()}>
             <Text style={styles.menuItem}>Take picture</Text>
           </TouchableOpacity>

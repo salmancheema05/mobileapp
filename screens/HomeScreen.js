@@ -18,6 +18,7 @@ import io from "socket.io-client";
 import { portio } from "../api/baseurl";
 function HomeScreen({ navigation }) {
   const Tab = createMaterialTopTabNavigator();
+
   const socket = io(portio);
   const {
     openMenu,
@@ -26,6 +27,7 @@ function HomeScreen({ navigation }) {
     requestsCount,
     setAllRequest,
     setRequestsCount,
+    setAllFriends,
   } = useContext(Context);
   const logout = async () => {
     const getData = await AsyncStorage.getItem("data");
@@ -38,12 +40,16 @@ function HomeScreen({ navigation }) {
       setLogin(false);
       setOpenMenu(false);
       navigation.navigate("loginscreen");
+      setAllFriends([]);
+      setAllRequest(null);
+      setRequestsCount(0);
       socket.emit("yourFriendOffline", {
         friendid: id,
         activestatus: "offline",
       });
     }
   };
+
   useEffect(() => {
     socket.on("requestdatareceive", async (data) => {
       const getData = await AsyncStorage.getItem("data");
@@ -51,6 +57,14 @@ function HomeScreen({ navigation }) {
       if (data.receiver_id == parsed.id) {
         setAllRequest((prevMessages) => [...prevMessages, data]);
         setRequestsCount(requestsCount + 1);
+      }
+    });
+    socket.on("accepted", async (data) => {
+      const getData = await AsyncStorage.getItem("data");
+      const parsed = JSON.parse(getData);
+      if (data.sender_id == parsed.id) {
+        setAllFriends((prevMessages) => [...prevMessages, data]);
+        setRequestsCount(requestsCount - 1);
       }
     });
   }, []);
@@ -93,24 +107,25 @@ function HomeScreen({ navigation }) {
           name="request"
           component={RequestTab}
           options={{
-            tabBarBadge: () => (
-              <Text
-                style={{
-                  backgroundColor: "white",
-                  marginRight: 40,
-                  marginTop: 15,
-                  paddingTop: 3,
-                  textAlign: "center",
-                  width: 20,
-                  height: 20,
-                  borderRadius: 20 / 2,
-                  color: "black",
-                  fontSize: 10,
-                }}
-              >
-                {requestsCount}
-              </Text>
-            ),
+            tabBarBadge: () =>
+              requestsCount > 0 ? (
+                <Text
+                  style={{
+                    backgroundColor: "white",
+                    marginRight: 40,
+                    marginTop: 15,
+                    paddingTop: 3,
+                    textAlign: "center",
+                    width: 20,
+                    height: 20,
+                    borderRadius: 20 / 2,
+                    color: "black",
+                    fontSize: 10,
+                  }}
+                >
+                  {requestsCount}
+                </Text>
+              ) : null,
           }}
         />
       </Tab.Navigator>

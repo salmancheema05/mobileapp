@@ -132,6 +132,7 @@ function SignupScreen({ navigation }) {
                 onChangeText={(text) =>
                   setTextFields({ ...textFields, password: text })
                 }
+                secureTextEntry={true}
                 placeholder="Password"
               />
               <TextInput
@@ -141,6 +142,7 @@ function SignupScreen({ navigation }) {
                 onChangeText={(text) =>
                   setTextFields({ ...textFields, confirmpassword: text })
                 }
+                secureTextEntry={true}
                 placeholder="Confirm Password"
               />
               <View style={styles.radioBox}>

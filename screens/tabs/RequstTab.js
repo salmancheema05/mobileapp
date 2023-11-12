@@ -90,33 +90,37 @@ function RequestTab() {
                     {item.firstname + " " + item.lastname}{" "}
                   </Text>
                 </View>
-                {item.request_status == "pending" ? (
-                  <View style={styles.requestButtonBox}>
+                <View style={styles.searchRequestControl}>
+                  {item.request_status == "pending" ? (
+                    <View style={styles.groupButtonBox}>
+                      <TouchableOpacity
+                        style={styles.searchGroupButton}
+                        onPress={() =>
+                          accept(item.sender_id, item.receiver_id, item)
+                        }
+                      >
+                        <Text style={styles.searchButtonText}>Accept</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.searchGroupButton}
+                        onPress={() =>
+                          cancelbutton(item.sender_id, item.receiver_id)
+                        }
+                      >
+                        <Text style={styles.searchButtonText}>cancel</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
                     <TouchableOpacity
-                      style={styles.requestButton}
-                      onPress={() => accept(item.sender_id, item.receiver_id)}
-                    >
-                      <Text style={styles.requestButtonText}>Accept</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.requestButton}
+                      style={styles.searchremoveButton}
                       onPress={() =>
                         cancelbutton(item.sender_id, item.receiver_id)
                       }
                     >
-                      <Text style={styles.requestButtonText}>cancel</Text>
+                      <Text style={styles.searchButtonText}>Remove</Text>
                     </TouchableOpacity>
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.searchremoveButton}
-                    onPress={() =>
-                      cancelbutton(item.sender_id, item.receiver_id)
-                    }
-                  >
-                    <Text style={styles.searchButtonText}>Remove</Text>
-                  </TouchableOpacity>
-                )}
+                  )}
+                </View>
               </View>
             </View>
           )}

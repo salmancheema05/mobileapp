@@ -7,17 +7,16 @@ import SplashScreen from "./screens/SplashScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Context } from "./Contextapi/Provider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile from "./screens/Profile";
 import SearchScreen from "./screens/SearchScreen";
 import { portio } from "./api/baseurl";
 import io from "socket.io-client";
-import { AppState, View } from "react-native";
+import { AppState } from "react-native";
 import useUserStatus from "./customHook/useUserStatus";
 
 const NavigationScreens = () => {
   const { userActive, activestatusUpdate } = useUserStatus();
-  const { isLogin, setAllFriends, loginbuttonClicked } = useContext(Context);
+  const { isLogin, loginbuttonClicked } = useContext(Context);
   const Stack = createStackNavigator();
   const socket = io(portio);
 
@@ -37,6 +36,7 @@ const NavigationScreens = () => {
   socket.on("activestatus", (data) => {
     activestatusUpdate(data);
   });
+
   useEffect(() => {
     if (loginbuttonClicked == false) {
       const handleAppStateChange = async (nextAppState) => {

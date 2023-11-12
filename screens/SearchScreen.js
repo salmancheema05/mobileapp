@@ -134,7 +134,7 @@ const SearchScreen = () => {
                         <TouchableOpacity
                           style={styles.searchGroupButton}
                           onPress={() =>
-                            accept(item.sender_id, item.receiver_id)
+                            accept(item.sender_id, item.receiver_id, item)
                           }
                         >
                           <Text style={styles.searchButtonText}>Accept</Text>

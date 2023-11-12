@@ -1,10 +1,15 @@
 import { useContext } from "react";
 import { Context } from "../Contextapi/Provider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import io from "socket.io-client";
 import { acceptRequests, removeRequestApi } from "../api/requestApi";
 import { Alert } from "react-native";
+import { portio } from "../api/baseurl";
 const useAcceptButton = (state, setState) => {
-  const accept = async (senderid, receiverId) => {
+  const { setAllFriends, allRequest, setAllRequest, setRequestsCount } =
+    useContext(Context);
+  const socket = io(portio);
+  const accept = async (senderid, receiverId, data) => {
     try {
       const getData = await AsyncStorage.getItem("data");
       const parsed = JSON.parse(getData);
@@ -12,8 +17,9 @@ const useAcceptButton = (state, setState) => {
       const object = { sender_id: senderid, receiver_id: receiverId };
       const friendId = senderid;
       updateRequestStatuts(friendId, receiverid, "accept", friendId);
-      const result = await acceptRequests(object);
-      Alert.alert(result.data.message);
+      socket.emit("accept", object);
+      setAllFriends((prevMessages) => [...prevMessages, data]);
+      setRequestsCount((prev) => prev - 1);
     } catch (error) {
       console.error(error);
     }
@@ -24,6 +30,12 @@ const useAcceptButton = (state, setState) => {
       const result = await removeRequestApi(object);
       if (screentype == "search") {
         updateRequestStatuts(senderId, null, null, null);
+        const array = allRequest.filter(
+          (item) =>
+            item.sender_id !== senderId && item.receiver_id !== receiverId
+        );
+        setAllRequest(array);
+        setRequestsCount((prev) => prev - 1);
       }
 
       if (result.status == 200) {
