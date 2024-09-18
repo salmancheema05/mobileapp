@@ -1,28 +1,27 @@
 {
   "expo": {
-    "name": "ChatAPP",
-    "slug": "ChatAPP",
+    "name": "ChatApp",
+    "slug": "chatapp",
+    "scheme": "chatapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-image-picker",
-    [
-      "expo-av",
-      {
-        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
-      }
-    ]
-  ],
+    "plugins": [
+      "expo-image-picker",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ]
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -30,10 +29,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.salmancheema1234.chatapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fe1e23eb-a763-484a-bd79-9698808aa2a3"
+      }
     }
   }
 }

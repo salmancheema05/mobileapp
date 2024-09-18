@@ -9,16 +9,17 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { styles } from "./style/HomeStyle";
-import All from "./tabs/All";
-import RequestTab from "./tabs/RequstTab";
+import All from "./tab/all";
+import Request from "./tab/requst";
 import { Entypo, EvilIcons } from "@expo/vector-icons";
 import { Context } from "../Contextapi/Provider";
 import { logoutApi } from "../api/userapi";
 import io from "socket.io-client";
 import { portio } from "../api/baseurl";
-function HomeScreen({ navigation }) {
+import { useNavigation } from "expo-router";
+function HomeScreen() {
   const Tab = createMaterialTopTabNavigator();
-
+  const navigation = useNavigation();
   const socket = io(portio);
   const {
     openMenu,
@@ -39,7 +40,7 @@ function HomeScreen({ navigation }) {
       await AsyncStorage.removeItem("data");
       setLogin(false);
       setOpenMenu(false);
-      navigation.navigate("loginscreen");
+      navigation.navigate("login");
       setAllFriends([]);
       setAllRequest(null);
       setRequestsCount(0);
@@ -81,7 +82,7 @@ function HomeScreen({ navigation }) {
           </View>
           <TouchableOpacity
             style={{ position: "absolute", right: 40, top: 37 }}
-            onPress={() => navigation.navigate("searchscreen")}
+            onPress={() => navigation.navigate("search")}
           >
             <EvilIcons name="search" size={30} color="white" />
           </TouchableOpacity>
@@ -105,8 +106,9 @@ function HomeScreen({ navigation }) {
         <Tab.Screen name="all" component={All} />
         <Tab.Screen
           name="request"
-          component={RequestTab}
+          component={Request}
           options={{
+            title: "Request",
             tabBarBadge: () =>
               requestsCount > 0 ? (
                 <Text
@@ -129,6 +131,7 @@ function HomeScreen({ navigation }) {
           }}
         />
       </Tab.Navigator>
+
       {openMenu === true ? (
         <View style={styles.dropdownmenu}>
           <TouchableOpacity

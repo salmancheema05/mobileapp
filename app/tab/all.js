@@ -11,7 +11,9 @@ import { styles } from "../style/HomeStyle";
 import defaultImage from "../../assets/images/3.png";
 import { Context } from "../../Contextapi/Provider";
 import useUserStatus from "../../customHook/useUserStatus";
-function All({ navigation }) {
+import { useNavigation } from "expo-router";
+function All() {
+  const navigation = useNavigation();
   const { allFriends, loginbuttonClicked, setLoginButtonClicked } =
     useContext(Context);
   const { userActive } = useUserStatus();

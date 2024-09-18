@@ -3,8 +3,10 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { Context } from "../Contextapi/Provider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-export default function SplashScreen({ navigation }) {
+import { useNavigation } from "expo-router";
+export default function SplashScreen() {
   const { setLogin } = useContext(Context);
+  const navigation = useNavigation();
   useEffect(() => {
     const userData = async () => {
       try {
@@ -12,12 +14,12 @@ export default function SplashScreen({ navigation }) {
         if (getData == null) {
           setTimeout(() => {
             setLogin(false);
-            navigation.navigate("loginscreen");
+            navigation.navigate("login");
           }, 3000);
         } else {
           setTimeout(() => {
             setLogin(true);
-            navigation.navigate("homescreen");
+            navigation.navigate("home");
           }, 3000);
         }
       } catch (error) {

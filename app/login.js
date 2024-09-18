@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Platform,
 } from "react-native";
 import { styles } from "./style/loginStyle";
 import { loginApi } from "../api/userapi";
@@ -14,7 +15,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Context } from "../Contextapi/Provider";
 import { portio } from "../api/baseurl";
 import io from "socket.io-client";
-function LoginScreen({ navigation }) {
+import { useNavigation } from "expo-router";
+function LoginScreen() {
+  const navigation = useNavigation();
   const [userName, setUserName] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const { setLogin, setLoginButtonClicked } = useContext(Context);
@@ -39,7 +42,7 @@ function LoginScreen({ navigation }) {
           await AsyncStorage.setItem("data", jsonData);
           setLogin(true);
           setLoginButtonClicked(true);
-          navigation.navigate("homescreen");
+          navigation.navigate("home");
           socket.emit("login", {
             friendid: decoded.user.id,
             activestatus: "online",
@@ -82,7 +85,7 @@ function LoginScreen({ navigation }) {
             <Text style={styles.signupText}>Create Account</Text>
             <TouchableOpacity
               style={styles.signupBox}
-              onPress={() => navigation.navigate("signupScreen")}
+              onPress={() => navigation.navigate("signup")}
             >
               <Text style={styles.signup}>Sign Up</Text>
             </TouchableOpacity>

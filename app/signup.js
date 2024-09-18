@@ -11,7 +11,9 @@ import {
 } from "react-native";
 import { styles } from "./style/loginStyle";
 import { signupApi } from "../api/userapi";
-function SignupScreen({ navigation }) {
+import { useNavigation } from "expo-router";
+function SignupScreen() {
+  const navigation = useNavigation();
   const [radioCheck, setRadioCheck] = useState({ value: null });
   const [textFields, setTextFields] = useState({
     firstname: "",
@@ -69,7 +71,7 @@ function SignupScreen({ navigation }) {
               gender: "",
             });
             setRadioCheck({ value: null });
-            navigation.navigate("loginscreen");
+            navigation.navigate("login");
           }
         }
       }
