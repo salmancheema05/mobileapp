@@ -1,12 +1,53 @@
 import React, { useEffect, useContext } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View, AppState } from "react-native";
 import { Context } from "../Contextapi/Provider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "expo-router";
+import useUserStatus from "../customHook/useUserStatus";
+import io from "socket.io-client";
+import { portio } from "../api/baseurl";
 export default function SplashScreen() {
   const { setLogin } = useContext(Context);
   const navigation = useNavigation();
+  const { userActive, activestatusUpdate } = useUserStatus();
+  const { loginbuttonClicked } = useContext(Context);
+  const socket = io(portio);
+
+  const appClose = async () => {
+    const getData = await AsyncStorage.getItem("data");
+    const parsed = JSON.parse(getData);
+    const userId = parsed.id;
+    socket.emit("yourFriendOffline", {
+      friendid: userId,
+      activestatus: "offline",
+    });
+  };
+  socket.on("inactivestatus", (data) => {
+    activestatusUpdate(data);
+  });
+  socket.on("activestatus", (data) => {
+    activestatusUpdate(data);
+  });
+
+  useEffect(() => {
+    if (loginbuttonClicked == false) {
+      const handleAppStateChange = async (nextAppState) => {
+        if (nextAppState === "background" || nextAppState === "inactive") {
+          await appClose();
+        } else if (nextAppState === "active") {
+          await userActive();
+        }
+      };
+      const subscription = AppState.addEventListener(
+        "change",
+        handleAppStateChange
+      );
+      return () => {
+        subscription.remove();
+      };
+    }
+  }, []);
   useEffect(() => {
     const userData = async () => {
       try {
