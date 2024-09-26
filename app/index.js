@@ -1,5 +1,4 @@
 import React, { useEffect, useContext } from "react";
-import { StatusBar } from "expo-status-bar";
 import { Text, View, AppState } from "react-native";
 import { Context } from "../Contextapi/Provider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,7 +6,8 @@ import { useNavigation } from "expo-router";
 import useUserStatus from "../customHook/useUserStatus";
 import io from "socket.io-client";
 import { portio } from "../api/baseurl";
-export default function SplashScreen() {
+import { StatusBar } from "expo-status-bar";
+export default function Index() {
   const { setLogin } = useContext(Context);
   const navigation = useNavigation();
   const { userActive, activestatusUpdate } = useUserStatus();
